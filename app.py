@@ -12,8 +12,8 @@ api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = os.environ.get('APP_KEY')
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
+app.secret_key = 'sid'
+app.config['JWT_SECRET_KEY'] = 'SID'
 
 @app.before_first_request
 def create_tables():

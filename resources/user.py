@@ -19,6 +19,9 @@ class UserRegister(Resource):
 		def validate(value):
 			if isinstance(value, int):
 				raise ValueError("Username must be string!")
+			else:
+				return value
+       
 
 		return validate
 
@@ -43,6 +46,7 @@ class UserRegister(Resource):
 		if UserModel.find_by_email(data['email']):
 			return {"message" : "User already exists"}, 404
 		
+		print(data)
 		user = UserModel(**data)
 		db.session.add(user)
 		db.session.commit()
@@ -68,7 +72,7 @@ class UserLogin(Resource):
 		user = UserModel.find_by_username(data['username'])
 		print(user)
     
-		
+
 	
 		if user and user.password == data['password']:
 			session['logged_in'] = True    
