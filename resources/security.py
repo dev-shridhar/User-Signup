@@ -22,8 +22,8 @@ class ForgotPassword(Resource):
         db.session.add(dt)
         db.session.commit()
 
-        sender_address = 'kulkarnisid007@gmail.com'
-        sender_password = 'ozqlprfqifqqfqmb'
+        sender_address = os.environ.get('ADDRESS')
+        sender_password = os.environ.get('PASSWORD')
         
         subject = "Forgot Password : Verification Code"
         body = f"""
