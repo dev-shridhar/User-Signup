@@ -18,32 +18,34 @@ class ForgotPassword(Resource):
         
         data = ForgotPassword.parser.parse_args()
         user = UserModel.query.filter_by(email=data['email']).first()
-        dt = VerificationModel(user.username, verification_number)
-        db.session.add(dt)
-        db.session.commit()
-
-        sender_address = os.environ.get('ADDRESS')
-        sender_password = os.environ.get('PASSWORD')
         
-        subject = "Forgot Password : Verification Code"
-        body = f"""
-        verification code : {verification_number}
-        """
+        if user:
+            dt = VerificationModel(user.username, verification_number)
+            db.session.add(dt)
+            db.session.commit()
 
-        try:
-            session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
-            session.starttls() #enable security
-            session.login(user=sender_address,password=sender_password) #login with mail_id and password
-            session.sendmail(
-                from_addr=sender_address, 
-                to_addrs=data['email'], 
-                msg = f"Subject:{subject}\n\nVerification code : {verification_number}")
-            session.quit()
+            sender_address = os.environ.get('ADDRESS')
+            sender_password = os.environ.get('PASSWORD')
+            subject = "Forgot Password : Verification Code"
+            body = f"""
+            verification code : {verification_number}
+            """
+
+            try:
+                session = smtplib.SMTP('smtp.gmail.com', 587) #use gmail with port
+                session.starttls() #enable security
+                session.login(user=sender_address,password=sender_password) #login with mail_id and password
+                session.sendmail(
+                    from_addr=sender_address, 
+                    to_addrs=data['email'], 
+                    msg = f"Subject:{subject}\n\nVerification code : {verification_number}")
+                session.quit()
+                
+                return {"message" : "Email sent successfully!"}
+            except Exception as ex:
+                return {"message" : f"Something went wrong….,{ex}"}
+        return {"message" : "Email not found!"}
             
-            return {"message" : "Email sent successfully!"}
-        except Exception as ex:
-            return {"message" : f"Something went wrong….,{ex}"}
-        
 
 class ChangePassword(Resource):
     parser = reqparse.RequestParser()
@@ -60,6 +62,7 @@ class ChangePassword(Resource):
         data = ChangePassword.parser.parse_args()
         
         user = VerificationModel.query.filter_by(verification_code=data['verification_code']).first()
+        
         
         if user:
             new_user = UserModel.query.filter_by(username=user.username).first()
