@@ -66,15 +66,18 @@ class UserLogin(Resource):
 		data = UserLogin.parser.parse_args()
 		
 		user = UserModel.find_by_username(data['username'])
+		print(user)
+    
 		
-		session['username'] = user.username
 	
 		if user and user.password == data['password']:
 			session['logged_in'] = True    
 			access_token = create_access_token(data['username'])
+			session['username'] = user.username
 			return {"access token" : access_token}, 200
-		
+
 		attempt = session.get('attempt')
+		print(attempt)
 		attempt -= 1
 		session['attempt'] = attempt
 		
