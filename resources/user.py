@@ -70,7 +70,7 @@ class UserLogin(Resource):
 		data = UserLogin.parser.parse_args()
 		
 		user = UserModel.find_by_username(data['username'])
-		print(user)
+		
     
 
 	
@@ -81,7 +81,7 @@ class UserLogin(Resource):
 			return {"access token" : access_token}, 200
 
 		attempt = session.get('attempt')
-		print(attempt)
+		
 		attempt -= 1
 		session['attempt'] = attempt
 		
