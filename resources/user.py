@@ -19,9 +19,7 @@ class UserRegister(Resource):
 		def validate(value):
 			if isinstance(value, int):
 				raise ValueError("Username must be string!")
-			else:
-				return value
-       
+			return value
 
 		return validate
 
@@ -46,7 +44,6 @@ class UserRegister(Resource):
 		if UserModel.find_by_email(data['email']):
 			return {"message" : "User already exists"}, 404
 		
-		print(data)
 		user = UserModel(**data)
 		db.session.add(user)
 		db.session.commit()
@@ -71,17 +68,14 @@ class UserLogin(Resource):
 		
 		user = UserModel.find_by_username(data['username'])
 		
-    
-
+		session['username'] = user.username
 	
 		if user and user.password == data['password']:
 			session['logged_in'] = True    
 			access_token = create_access_token(data['username'])
-			session['username'] = user.username
 			return {"access token" : access_token}, 200
-
-		attempt = session.get('attempt')
 		
+		attempt = session.get('attempt')
 		attempt -= 1
 		session['attempt'] = attempt
 		
@@ -90,5 +84,8 @@ class UserLogin(Resource):
 			return {"message" :'Cant login, will be blocked for 24hr'}
 		
 		return {"message" : "Invalid Credentials"}, 401
+	
+
+
 	
 
